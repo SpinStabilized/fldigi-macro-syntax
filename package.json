@@ -1,0 +1,25 @@
+{
+  "name": "fldigi-macro-syntax",
+  "displayName": "fldigi-macro-syntax",
+  "description": "Syntax highlighting for fldigi .mdf files",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.116.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "fldigi-mdf",
+      "aliases": ["fldigi Macro", "fldigi-mdf"],
+      "extensions": [".mdf"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "fldigi-mdf",
+      "scopeName": "source.mdf",
+      "path": "./syntaxes/fldigi-mdf.tmLanguage.json"
+    }]
+  }
+}
