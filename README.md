@@ -4,7 +4,7 @@ Syntax highlighting and diagnostics for fldigi macro definition (`.mdf`) files i
 
 ## Features
 
-- Highlighting for all 176 macro tags (immediate, `<!inline>`, and `<@delayed>`).
+- Highlighting for all macro tags (immediate, `<!inline>`, and `<@delayed>`).
 - Tag names are matched case-insensitively, just like fldigi.
 - FLTK button label symbols, including formatting prefixes and the `@@` escape.
 - `<EXEC>` blocks, `<COMMENT:>` tags, and `\n` line markers.
