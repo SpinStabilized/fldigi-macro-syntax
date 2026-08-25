@@ -496,7 +496,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     ok = write_or_check(args.out_dir / "extension/syntaxes/fldigi-mdf.tmLanguage.json",
                         grammar_txt, args.check)
-    ok &= write_or_check(args.out_dir / "data/fldigi-tags.json",
+    ok &= write_or_check(args.out_dir / "extension/data/fldigi-tags.json",
                          data_txt, args.check)
 
     if args.check and not ok:
