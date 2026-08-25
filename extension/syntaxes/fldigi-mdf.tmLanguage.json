@@ -1,0 +1,250 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "fldigi Macro",
+  "scopeName": "source.mdf",
+  "patterns": [
+    {
+      "include": "#fileHeader"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#macroDefinition"
+    },
+    {
+      "include": "#tags"
+    },
+    {
+      "include": "#escapes"
+    }
+  ],
+  "repository": {
+    "fileHeader": {
+      "name": "markup.bold.header.mdf",
+      "match": "^//fldigi macro definition file( extended)?\\s*$"
+    },
+    "comments": {
+      "name": "comment.line.double-slash.mdf",
+      "match": "^//.*$"
+    },
+    "macroDefinition": {
+      "name": "meta.macro.header.mdf",
+      "match": "^(/\\$)\\s+(\\d+)\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.macro.mdf"
+        },
+        "2": {
+          "name": "constant.numeric.macro-index.mdf"
+        },
+        "3": {
+          "name": "entity.name.function.macro-label.mdf",
+          "patterns": [
+            {
+              "include": "#labelSymbol"
+            }
+          ]
+        }
+      }
+    },
+    "tags": {
+      "patterns": [
+        {
+          "include": "#execBlock"
+        },
+        {
+          "include": "#commentTag"
+        },
+        {
+          "include": "#dateTimeTag"
+        },
+        {
+          "include": "#tagInline"
+        },
+        {
+          "include": "#tagDelayed"
+        },
+        {
+          "include": "#tagImmediate"
+        },
+        {
+          "include": "#unknownTag"
+        }
+      ]
+    },
+    "execBlock": {
+      "name": "meta.tag.exec.mdf",
+      "begin": "(<)((?i:EXEC))(>)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "entity.name.tag.mdf"
+        },
+        "3": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      },
+      "end": "(</)(EXEC)(>)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "entity.name.tag.mdf"
+        },
+        "3": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      },
+      "contentName": "string.unquoted.exec-body.mdf"
+    },
+    "commentTag": {
+      "name": "comment.block.mdf",
+      "match": "<(?:(?i:COMMENT):|#)[^>]*>"
+    },
+    "dateTimeTag": {
+      "match": "(<)((?i:ILDT|IZDT|LDT|ZDT|LD|LT|ZD|ZT))(?:(:)([^>]*))?(>)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "entity.name.tag.immediate.mdf"
+        },
+        "3": {
+          "name": "punctuation.separator.key-value.mdf"
+        },
+        "4": {
+          "name": "variable.parameter.datetime-format.mdf",
+          "patterns": [
+            {
+              "name": "constant.character.format.strftime.mdf",
+              "match": "%[aAbBcCdDeEFgGhHIjklmMnOpPrRsStTuUVwWxXyYzZ%]"
+            }
+          ]
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      }
+    },
+    "tagInline": {
+      "match": "(<)(!)((?i:RIGMODE|TXATTEN|FILWID|GOFREQ|GOHOME|RIGCAT|FLRIG|MODEM|RIGHI|RIGLO|DIGI|FREQ|IDLE|POST|PUSH|RISE|SKED|TUNE|WAIT|POP|PRE|QSY|WPM))(?:(:)([^>]*))?(>)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "keyword.other.inline-modifier.mdf"
+        },
+        "3": {
+          "name": "entity.name.tag.inline.mdf"
+        },
+        "4": {
+          "name": "punctuation.separator.key-value.mdf"
+        },
+        "5": {
+          "name": "variable.parameter.mdf"
+        },
+        "6": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      }
+    },
+    "tagDelayed": {
+      "match": "(<)(@)((?i:RIGMODE|FILWID|GOFREQ|GOHOME|RIGCAT|TXRSID|FLRIG|MODEM|RIGHI|RIGLO|LOCK|PUSH|QSY\\+|TUNE|WAIT|POP))(?:(:)([^>]*))?(>)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "keyword.other.delayed-modifier.mdf"
+        },
+        "3": {
+          "name": "entity.name.tag.delayed.mdf"
+        },
+        "4": {
+          "name": "punctuation.separator.key-value.mdf"
+        },
+        "5": {
+          "name": "variable.parameter.mdf"
+        },
+        "6": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      }
+    },
+    "tagImmediate": {
+      "match": "(<)((?i:CPS_STRING|WAV_STRING|GEN_PAUSE|GEN_START|MYSECTION|BUFFERED|CPS_FILE|CPS_TEST|GEN_STOP|MYCOUNTY|SAVEXCHG|WAV_FILE|WAV_TEST|ANTENNA|FDCLASS|MYCLASS|MYSTATE|QSOTIME|RIGMODE|SECTION|TXATTEN|AVATAR|CLRLOG|CLRQSO|FDSECT|FILWID|GOFREQ|GOHOME|LASTNO|MACROS|MYCALL|MYCNTY|MYNAME|NXTNBR|QSONBR|REPEAT|RIGCAT|RXRSID|SRCHDN|SRCHUP|TXRSID|TX_PWR|AFTER|ALERT|AUDIO|CLASS|CLRRX|CLRTX|CPS_N|FLRIG|FOCUS|IMAGE|INFO1|INFO2|LOCAL|MAPIT|MODEM|MYLOC|MYQTH|MYRST|NRSID|PAUSE|QSYFM|QSYTO|RIGHI|RIGLO|SERNO|SQLCH|TIMER|TX/RX|UNTIL|VIDEO|WAV_N|BAND|CALL|CNTR|CONT|CWID|DECR|DIGI|DTMF|EQSL|FILE|FREQ|IDLE|INCR|LOCK|MODE|MYST|NAME|POST|PUSH|QSY\\+|RISE|SAVE|SKED|STOP|TALK|TEXT|TUNE|WAIT|XBEG|XEND|XOUT|AFC|CSV|GET|LNW|LOC|LOG|POP|PRE|QRG|QSY|QTH|REV|RST|SQL|VER|WPM|XIN|HS|ID|PR|RX|ST|TX|WX|X1))(?:(:)([^>]*))?(>)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tag.begin.mdf"
+        },
+        "2": {
+          "name": "entity.name.tag.immediate.mdf"
+        },
+        "3": {
+          "name": "punctuation.separator.key-value.mdf"
+        },
+        "4": {
+          "name": "variable.parameter.mdf"
+        },
+        "5": {
+          "name": "punctuation.definition.tag.end.mdf"
+        }
+      }
+    },
+    "unknownTag": {
+      "name": "invalid.illegal.unrecognized-tag.mdf",
+      "match": "<[!@]?[A-Za-z][A-Za-z0-9_/+]*(?::[^>]*)?>"
+    },
+    "escapes": {
+      "patterns": [
+        {
+          "match": "(\\\\n)([^\\r\\n]+)$",
+          "captures": {
+            "1": {
+              "name": "constant.character.escape.mdf"
+            },
+            "2": {
+              "name": "invalid.illegal.unreachable-text.mdf"
+            }
+          }
+        },
+        {
+          "name": "constant.character.escape.mdf",
+          "match": "\\\\n"
+        }
+      ]
+    },
+    "labelSymbol": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.at-sign.mdf",
+          "match": "@@"
+        },
+        {
+          "match": "(@)((?:#)?(?:[+-][1-9])?(?:[$%])?(?:0\\d{4}|\\d)?)(returnarrow|DnArrow|UpArrow|circle|square|arrow|\\[\\]<<|line|menu|-->|->\\||<->|>\\[\\]|->|<-|<<|<\\||>>|>\\||\\|<|\\|>|\\|\\||\\+|<|>)",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.symbol.mdf"
+            },
+            "2": {
+              "name": "constant.other.symbol-format.mdf"
+            },
+            "3": {
+              "name": "support.constant.symbol.mdf"
+            }
+          }
+        },
+        {
+          "name": "invalid.illegal.unknown-symbol.mdf",
+          "match": "@[^\\s]*"
+        }
+      ]
+    }
+  }
+}
