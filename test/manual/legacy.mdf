@@ -1,0 +1,14 @@
+//fldigi macro definition file
+stray body text before any definition
+//
+// Macro # 1
+/$ 46 ConvertOverflow
+<CLRTX>
+//
+// Macro # 2
+/$ 1 LowerExec
+<EXEC>ls</exec>
+//
+// Macro # 3
+/$ 2 EmptyMacrosPath
+<MACROS:>

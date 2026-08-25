@@ -12,10 +12,10 @@ FLDIGI_SRC    ?= ~/source/fldigi
 # -v: verbose output
 # -h: human-readable numbers
 # --progress: show progress bar during transfer
-RSYNC_FLAGS   := -avh --progress
+# --delete: remove files in DEST that no longer exist in SRC
+RSYNC_FLAGS   := -avh --progress --delete
 
-# Files and folders to exclude from the transfer
-EXCLUDES      :=  
+EXCLUDES      :=
 
 grammar: ## Regenerate the grammar + tag data from the fldigi source (FLDIGI_SRC=...)
 	@echo "=== GENERATING GRAMMAR FROM FLDIGI SOURCE ==="
@@ -26,6 +26,43 @@ check-grammar: ## Fail if the committed grammar is stale vs the fldigi source
 	@echo "=== CHECKING GRAMMAR IS UP TO DATE ==="
 	python3 tools/gen_grammar.py --fldigi-src $(FLDIGI_SRC) --out-dir . --check
 .PHONY: check-grammar
+
+# Local TypeScript binary. Used directly rather than via bare `npx tsc`:
+# if typescript is not installed, npx will silently fetch and run an unrelated
+# package from the registry that happens to be named "tsc".
+TSC           := ./node_modules/.bin/tsc
+
+deps: ## Install the dev tooling (typescript + type stubs) into ./node_modules
+	@echo "=== INSTALLING DEV DEPENDENCIES ==="
+	npm install
+.PHONY: deps
+
+typecheck: ## Type-check the extension JavaScript (run 'make deps' first)
+	@echo "=== TYPE CHECKING ==="
+	@test -f jsconfig.json || { \
+		echo ""; \
+		echo "jsconfig.json is missing from the repo root."; \
+		echo "It tells tsc which files to check and turns on checkJs/strict."; \
+		echo ""; \
+		exit 1; \
+	}
+	@test -x $(TSC) || { \
+		echo ""; \
+		echo "TypeScript is not installed locally."; \
+		echo "Run 'make deps' first (this installs into ./node_modules)."; \
+		echo ""; \
+		exit 1; \
+	}
+	$(TSC) -p jsconfig.json
+.PHONY: typecheck
+
+test: ## Run the diagnostics test suite
+	@echo "=== RUNNING DIAGNOSTICS TESTS ==="
+	node test/run-tests.js
+.PHONY: test
+
+check: check-grammar typecheck test ## Run every check (use this in CI)
+.PHONY: check
 
 dry-run: ## Lets you know what files will be exchanged on deployment
 	@echo "=== SIMULATING LOCAL SYNC (DRY RUN) ==="

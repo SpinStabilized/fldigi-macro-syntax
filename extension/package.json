@@ -1,25 +1,51 @@
 {
   "name": "fldigi-macro-syntax",
-  "displayName": "fldigi-macro-syntax",
-  "description": "Syntax highlighting for fldigi .mdf files",
-  "version": "0.0.1",
+  "displayName": "fldigi Macro Syntax",
+  "description": "Syntax highlighting and diagnostics for fldigi .mdf macro definition files",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": [
+    "fldigi",
+    "mdf",
+    "macro",
+    "ham radio",
+    "amateur radio"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SpinStabilized/fldigi-macro-syntax.git"
+  },
   "engines": {
     "vscode": "^1.116.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Linters"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:fldigi-mdf"
   ],
   "contributes": {
-    "languages": [{
-      "id": "fldigi-mdf",
-      "aliases": ["fldigi Macro", "fldigi-mdf"],
-      "extensions": [".mdf"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "fldigi-mdf",
-      "scopeName": "source.mdf",
-      "path": "./syntaxes/fldigi-mdf.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "fldigi-mdf",
+        "aliases": [
+          "fldigi Macro",
+          "fldigi-mdf"
+        ],
+        "extensions": [
+          ".mdf"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fldigi-mdf",
+        "scopeName": "source.mdf",
+        "path": "./syntaxes/fldigi-mdf.tmLanguage.json"
+      }
+    ]
   }
 }

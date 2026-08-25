@@ -1,0 +1,73 @@
+//fldigi macro definition file extended
+// Every ERROR/WARN marker below is intentional. Used to verify diagnostics.
+
+//
+// Macro # 1
+/$ 0 Good @>|
+<TX>de <MYCALL> k<RX>
+
+//
+// Macro # 2
+/$ 1 UnknownTag
+<QYS:typo of QSY>\n
+<!NOSUCH:x><@ALSONOPE:y>
+
+//
+// Macro # 3
+/$ 2 BadSymbol @nosuchsymbol
+<CLRTX>
+
+//
+// Macro # 4
+/$ 3 TildePath
+<MACROS:~/.fldigi/macros/other.mdf>
+
+//
+// Macro # 5
+/$ 4 EnvVarPath
+<MACROS:$HOME/.fldigi/macros/other.mdf>
+
+//
+// Macro # 6
+/$ 5 RelativePath
+<MACROS:other.mdf>
+
+//
+// Macro # 7
+/$ 6 TrailingAfterEscape
+this text is kept\nthis text is silently dropped
+
+//
+// Macro # 8
+/$ 7 MultipleEscapes
+first\nsecond\nthird
+
+//
+// Macro # 9
+/$ 0 DuplicateIndex
+<CLRRX>
+
+//
+// Macro # 99
+/$ 9 CommentMismatch
+<CLRTX>
+
+//
+// Macro # 11
+/$ 48 OutOfRange
+<CLRTX>
+
+//
+// Macro # 12
+/$ notanumber Label
+<CLRTX>
+
+//
+// Macro # 13
+/$ 13
+<CLRTX>
+
+//
+// Macro # 14
+/$ 14 UnclosedExec
+<EXEC>ls -la

@@ -1,0 +1,15 @@
+{
+  "name": "fldigi-macro-syntax-dev",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Development tooling for the fldigi-macro-syntax extension. This is NOT the extension manifest -- that lives in extension/package.json and is the only one that ships.",
+  "scripts": {
+    "typecheck": "tsc -p jsconfig.json",
+    "test": "node test/run-tests.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.116.0",
+    "typescript": "^5.6.0"
+  }
+}
