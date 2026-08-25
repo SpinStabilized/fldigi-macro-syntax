@@ -61,7 +61,7 @@ test('handles negative', () => assert.strictEqual(atoi('-3'), -3));
 test('empty string is 0', () => assert.strictEqual(atoi(''), 0));
 
 console.log('\nreal-world files produce no findings');
-for (const f of ['psk_macros.mdf', 'rtty_macros.mdf']) {
+for (const f of fs.readdirSync(path.join(__dirname, 'fixtures')).filter(f => f.endsWith('.mdf'))) {
   const p = path.join(__dirname, 'fixtures', f);
   if (!fs.existsSync(p)) continue;
   test(`${f} is clean`, () => {
