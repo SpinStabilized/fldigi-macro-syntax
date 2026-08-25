@@ -1,65 +1,86 @@
-# fldigi-macros README
+# fldigi-macro-syntax
 
-This is the README for your extension "fldigi-macros". After writing up a brief description, we recommend including the following sections.
+Syntax highlighting and diagnostics for fldigi macro definition (`.mdf`) files in VS Code.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Highlighting for all 176 macro tags (immediate, `<!inline>`, and `<@delayed>`).
+- Tag names are matched case-insensitively, just like fldigi.
+- FLTK button label symbols, including formatting prefixes and the `@@` escape.
+- `<EXEC>` blocks, `<COMMENT:>` tags, and `\n` line markers.
+- 18 diagnostics that catch failures fldigi handles silently.
 
-For example if there is an image subfolder under your extension project workspace:
+The grammar is generated from fldigi's own source, so it never drifts from the program.
 
-\!\[feature X\]\(images/feature-x.png\)
+## Install
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+```sh
+make deps    # one time, installs dev tooling
+make sync    # copies extension/ into ~/.vscode/extensions/
+```
 
-## Requirements
+Reload the VS Code window afterward. Grammar changes do not hot-reload.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Diagnostics
 
-## Extension Settings
+Each rule maps to real behaviour in fldigi's `loadMacros()` or `expandMacro()`.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+| Code | Severity | Problem                                                              |
+|------|----------|----------------------------------------------------------------------|
+| E001 | error    | Header missing or malformed, so nothing loads                        |
+| E002 | error    | Macro number outside 0-47, aborts the whole load                     |
+| E003 | error    | No space after the macro number, line is ignored                     |
+| E004 | error    | Macro number is not numeric, overwrites macro 0                      |
+| E005 | error    | `<MACROS:>` uses `~` or `$VAR`, which fldigi cannot expand           |
+| E006 | error    | `<MACROS:>` path is relative, so it depends on the working directory |
+| E007 | error    | `<EXEC>` is never closed                                             |
+| E008 | error    | `</exec>` is lowercase, so it will not close the block               |
+| E009 | error    | Unknown macro tag, sent as literal text                              |
+| E010 | error    | Unrecognized FLTK label symbol                                       |
+| E011 | error    | Legacy file, macro number shifts past the end of the array           |
+| W001 | warning  | Duplicate macro number, bodies get concatenated                      |
+| W002 | warning  | Text after the last `\n` on a line is discarded                      |
+| W003 | warning  | Only the last `\n` on a line becomes a newline                       |
+| W005 | warning  | Header lacks `extended`, numbers above 9 shift by +2                 |
+| W007 | warning  | Body text before any `/$` is added to macro 0                        |
+| W008 | warning  | `<MACROS:>` path is empty                                            |
+| W004 | info     | `// Macro # N` comment disagrees with the `/$` number                |
 
-For example:
+A failed `<MACROS:>` load is destructive. fldigi replaces your macros with defaults, then saves them.
 
-This extension contributes the following settings:
+## Regenerating the grammar
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+The grammar and tag data come from fldigi's `macros.cxx` and `globals.cxx`.
 
-## Known Issues
+```sh
+make grammar FLDIGI_SRC=~/source/fldigi
+```
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Run this after upgrading fldigi. New releases add tags, and version 4.2.13 added seven.
 
-## Release Notes
+## Repository layout
 
-Users appreciate release notes as you update your extension.
+```
+extension/     the extension itself (the only thing deployed)
+  data/        generated tag tables
+  syntaxes/    generated TextMate grammar
+tools/         grammar generator
+test/          test suite and sample .mdf files
+```
 
-### 1.0.0
+Note there are two `package.json` files. The root one holds dev tooling, `extension/` holds the manifest.
 
-Initial release of ...
+## Development
 
-### 1.0.1
+```sh
+make deps        # install dev tooling
+make check       # grammar freshness, type checking, and tests
+make dry-run     # preview what a sync would copy
+make help        # list all targets
+```
 
-Fixed issue #.
+The analyzer in `extension/mdf-analyzer.js` has no VS Code dependency. It runs under plain node.
 
-### 1.1.0
+## License
 
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+MIT
