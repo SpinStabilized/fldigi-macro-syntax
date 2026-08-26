@@ -23,16 +23,14 @@
     "Linters"
   ],
   "main": "./extension.js",
-  "activationEvents": [
-    "onLanguage:fldigi-mdf"
-  ],
+  "activationEvents": [],
   "contributes": {
     "languages": [
       {
         "id": "fldigi-mdf",
         "aliases": [
-          "fldigi Macro",
-          "fldigi-mdf"
+          "Fldigi Macro",
+          "Fldigi-mdf"
         ],
         "extensions": [
           ".mdf"
