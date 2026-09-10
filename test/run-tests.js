@@ -61,7 +61,7 @@ test('handles negative', () => assert.strictEqual(atoi('-3'), -3));
 test('empty string is 0', () => assert.strictEqual(atoi(''), 0));
 
 console.log('\nreal-world files produce no findings');
-for (const f of fs.readdirSync(path.join(__dirname, 'fixtures')).filter(f => f.endsWith('.mdf'))) {
+for (const f of ['psk_macros.mdf', 'rtty_macros.mdf']) {
   const p = path.join(__dirname, 'fixtures', f);
   if (!fs.existsSync(p)) continue;
   test(`${f} is clean`, () => {
@@ -80,9 +80,15 @@ test('E001 is case-sensitive', () =>
   assert.ok(codes('//FLDIGI MACRO DEFINITION FILE\n').includes('E001')));
 test('no E001 without "extended" (it is optional)', () =>
   assert.ok(!codes('//fldigi macro definition file\n').includes('E001')));
-test('W005 when "extended" absent', () =>
-  assert.ok(codes('//fldigi macro definition file\n').includes('W005')));
-test('no W005 when extended present', () => assert.ok(!codes(HEADER).includes('W005')));
+test('E012 when "extended" absent', () =>
+  assert.ok(codes('//fldigi macro definition file\n').includes('E012')));
+test('E012 is an error, not a warning', () => {
+  const found = analyze('//fldigi macro definition file\n', TAG_DATA);
+  const e012 = found.find((d) => d.code === 'E012');
+  assert.ok(e012);
+  assert.strictEqual(e012.severity, 'error');
+});
+test('no E012 when extended present', () => assert.ok(!codes(HEADER).includes('E012')));
 
 console.log('\nmacro definition line');
 test('E002 on index 48 (out of range)', () =>

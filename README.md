@@ -4,7 +4,7 @@ Syntax highlighting and diagnostics for fldigi macro definition (`.mdf`) files i
 
 ## Features
 
-- Highlighting for all macro tags (immediate, `<!inline>`, and `<@delayed>`).
+- Highlighting for all 176 macro tags (immediate, `<!inline>`, and `<@delayed>`).
 - Tag names are matched case-insensitively, just like fldigi.
 - FLTK button label symbols, including formatting prefixes and the `@@` escape.
 - `<EXEC>` blocks, `<COMMENT:>` tags, and `\n` line markers.
@@ -38,10 +38,10 @@ Each rule maps to real behaviour in fldigi's `loadMacros()` or `expandMacro()`.
 | E009 | error    | Unknown macro tag, sent as literal text                              |
 | E010 | error    | Unrecognized FLTK label symbol                                       |
 | E011 | error    | Legacy file, macro number shifts past the end of the array           |
+| E012 | error    | Header missing `extended`, required by project policy                |
 | W001 | warning  | Duplicate macro number, bodies get concatenated                      |
 | W002 | warning  | Text after the last `\n` on a line is discarded                      |
 | W003 | warning  | Only the last `\n` on a line becomes a newline                       |
-| W005 | warning  | Header lacks `extended`, numbers above 9 shift by +2                 |
 | W007 | warning  | Body text before any `/$` is added to macro 0                        |
 | W008 | warning  | `<MACROS:>` path is empty                                            |
 | W004 | info     | `// Macro # N` comment disagrees with the `/$` number                |
@@ -60,7 +60,7 @@ Run this after upgrading fldigi. New releases add tags, and version 4.2.13 added
 
 ## Repository layout
 
-```
+```text
 extension/     the extension itself (the only thing deployed)
   data/        generated tag tables
   syntaxes/    generated TextMate grammar

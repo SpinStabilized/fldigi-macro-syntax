@@ -10,6 +10,12 @@
  * to surface failures that fldigi itself handles silently -- it will happily
  * load a broken file, drop macros, or overwrite your macro file with defaults
  * and never say a word.
+ *
+ * One rule (E012) is stricter than fldigi itself: fldigi treats "extended" in
+ * the header as optional and falls back to a legacy compatibility mode when
+ * it's absent. This project requires it unconditionally, since that legacy
+ * mode silently relocates macros and, for indices 46-47, writes past the end
+ * of fldigi's fixed-size macro array.
  */
 
 'use strict';
@@ -175,19 +181,24 @@ function analyze(text, tagData) {
     });
   }
 
-  // A header without "extended" puts the loader in convert mode, where every
-  // macro number above 9 is silently shifted by +2.
+  // fldigi itself treats "extended" as optional and falls back to a legacy
+  // "convert" mode when it's missing (see the E011 check below). This project
+  // requires it unconditionally: convert mode silently relocates every macro
+  // above index 9, and for indices 46/47 writes past the end of fldigi's
+  // fixed-size macro array. There is no reason to author a new file without it.
   const convert = first.startsWith(HEADER_PREFIX) && !first.includes('extended');
   if (convert) {
     out.push({
       line: 0,
       startCol: 0,
       endCol: Math.max(first.length, 1),
-      severity: 'warning',
-      code: 'W005',
+      severity: 'error',
+      code: 'E012',
       message:
-        `Header lacks "extended", so fldigi loads this file in legacy convert ` +
-        `mode and shifts every macro number above 9 by +2.`,
+        `Header must include "extended". Without it, fldigi loads this file in ` +
+        `legacy convert mode and shifts every macro number above 9 by +2, which ` +
+        `silently relocates macros 10-45 and corrupts memory for macros 46-47 ` +
+        `(see the error on that line, if present). Add "extended" to line 1.`,
     });
   }
 
@@ -290,7 +301,7 @@ function analyze(text, tagData) {
         });
       } else if (convert && parsed > maxMacros - 3) {
         // Range is checked before the +2 convert shift, so 46/47 become 48/49
-        // and write past the end of name[]/text[].
+        // and write past the end of name[]/text[]. Fires alongside E012.
         out.push({
           line: n,
           startCol: 3,
@@ -298,9 +309,8 @@ function analyze(text, tagData) {
           severity: 'error',
           code: 'E011',
           message:
-            `Macro number ${parsed} in a non-"extended" file becomes ${parsed + 2} ` +
-            `after fldigi's convert shift, which is past the end of its ${maxMacros}-entry ` +
-            `array. Add "extended" to the header line.`,
+            `Macro number ${parsed} becomes ${parsed + 2} under legacy convert mode, ` +
+            `past the end of fldigi's ${maxMacros}-entry array. Add "extended" to line 1.`,
         });
       } else {
         const prev = seenIndex.get(parsed);
